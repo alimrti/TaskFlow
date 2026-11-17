@@ -6,34 +6,49 @@ A REST API for managing users and tasks.
 - Node.js
 - Express.js
 - MongoDB
+- Mongoose
 - Docker
 - Docker Compose
 
 ## Features
-- Create users
-- Retrieve users
+- Create and retrieve users
 - Delete users
-- Create tasks
-- Retrieve tasks
-- Update tasks
-- Delete tasks
-- RESTful API architecture
+- Create and retrieve tasks
+- Update and delete tasks
+- Input validation
+- HTTP Status Code handling
 - Docker containerization
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | / | API status |
-| GET | /api/users | Get all users |
-| POST | /api/users | Create user |
-| GET | /api/users/:id | Get user |
-| DELETE | /api/users/:id | Delete user |
-| GET | /api/tasks | Get all tasks |
-| POST | /api/tasks | Create task |
-| GET | /api/tasks/:id | Get task |
-| PUT | /api/tasks/:id | Update task |
-| DELETE | /api/tasks/:id | Delete task |
+### Users
+
+| Method | Endpoint | Description | Status Code |
+|---|---|---|---|
+| GET | /api/users | Get all users | 200 |
+| POST | /api/users | Create user | 201 |
+| GET | /api/users/:id | Get user | 200, 400, 404 |
+| DELETE | /api/users/:id | Delete user | 200, 400, 404 |
+
+### Tasks
+
+| Method | Endpoint | Description | Status Code |
+|---|---|---|---|
+| GET | /api/tasks | Get all tasks | 200 |
+| POST | /api/tasks | Create task | 201 |
+| GET | /api/tasks/:id | Get task | 200, 400, 404 |
+| PUT | /api/tasks/:id | Update task | 200, 400, 404 |
+| DELETE | /api/tasks/:id | Delete task | 200, 400, 404 |
+
+## HTTP Status Codes
+
+| Code | Meaning |
+|---|---|
+| 200 | OK - Successful request |
+| 201 | Created - Resource created |
+| 400 | Bad Request - Invalid input |
+| 404 | Not Found - Resource not found |
+| 500 | Internal Server Error |
 
 ## Docker Commands
 
