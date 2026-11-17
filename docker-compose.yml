@@ -7,7 +7,8 @@ services:
     environment:
       - MONGO_URL=mongodb://database:27017/taskdb
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - task-network
 
@@ -16,6 +17,11 @@ services:
     container_name: task-database
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     networks:
       - task-network
 
