@@ -5,27 +5,26 @@ const app = express();
 
 app.use(express.json());
 
-// Database Connection
-mongoose.connect(
-  process.env.MONGO_URL || "mongodb://localhost:27017/taskdb"
-)
-.then(() => console.log("Database Connected"))
-.catch(err => console.log("Database Error:", err));
-
 // Models
-const User = mongoose.model("User", new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true }
-}));
+const User = mongoose.model(
+  "User",
+  new mongoose.Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true }
+  })
+);
 
-const Task = mongoose.model("Task", new mongoose.Schema({
-  title: { type: String, required: true },
-  description: String,
-  completed: {
-    type: Boolean,
-    default: false
-  }
-}));
+const Task = mongoose.model(
+  "Task",
+  new mongoose.Schema({
+    title: { type: String, required: true },
+    description: String,
+    completed: {
+      type: Boolean,
+      default: false
+    }
+  })
+);
 
 // Home Endpoint
 app.get("/", (req, res) => {
@@ -36,13 +35,11 @@ app.get("/", (req, res) => {
 
 // USERS ENDPOINTS
 
-// Get All Users
 app.get("/api/users", async (req, res) => {
   const users = await User.find();
   res.status(200).json(users);
 });
 
-// Create User
 app.post("/api/users", async (req, res) => {
   if (!req.body.name || !req.body.email) {
     return res.status(400).json({
@@ -54,7 +51,6 @@ app.post("/api/users", async (req, res) => {
   res.status(201).json(user);
 });
 
-// Get User By ID
 app.get("/api/users/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ message: "Invalid user ID" });
@@ -69,7 +65,6 @@ app.get("/api/users/:id", async (req, res) => {
   res.status(200).json(user);
 });
 
-// Delete User
 app.delete("/api/users/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ message: "Invalid user ID" });
@@ -86,13 +81,11 @@ app.delete("/api/users/:id", async (req, res) => {
 
 // TASKS ENDPOINTS
 
-// Get All Tasks
 app.get("/api/tasks", async (req, res) => {
   const tasks = await Task.find();
   res.status(200).json(tasks);
 });
 
-// Create Task
 app.post("/api/tasks", async (req, res) => {
   if (!req.body.title) {
     return res.status(400).json({
@@ -104,7 +97,6 @@ app.post("/api/tasks", async (req, res) => {
   res.status(201).json(task);
 });
 
-// Get Task By ID
 app.get("/api/tasks/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ message: "Invalid task ID" });
@@ -119,7 +111,6 @@ app.get("/api/tasks/:id", async (req, res) => {
   res.status(200).json(task);
 });
 
-// Update Task
 app.put("/api/tasks/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ message: "Invalid task ID" });
@@ -138,7 +129,6 @@ app.put("/api/tasks/:id", async (req, res) => {
   res.status(200).json(task);
 });
 
-// Delete Task
 app.delete("/api/tasks/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ message: "Invalid task ID" });
@@ -175,9 +165,27 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
-const PORT = process.env.PORT || 3000;
+// Export app and models for testing
+module.exports = { app, User, Task };
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Start Server only when executed directly
+async function startServer() {
+  await mongoose.connect(
+    process.env.MONGO_URL || "mongodb://localhost:27017/taskdb"
+  );
+
+  console.log("Database Connected");
+
+  const PORT = process.env.PORT || 3000;
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+if (require.main === module) {
+  startServer().catch(err => {
+    console.error("Server Startup Error:", err);
+    process.exit(1);
+  });
+}
